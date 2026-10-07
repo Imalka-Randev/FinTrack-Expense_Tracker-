@@ -1,0 +1,15 @@
+# OS generated files
+.DS_Store
+
+# User specified folders
+Documents/
+
+# Node environment and dependencies
+node_modules/
+dist/
+logs/
+
+# Environment variables
+.env
+.env.*
+!.env.example
