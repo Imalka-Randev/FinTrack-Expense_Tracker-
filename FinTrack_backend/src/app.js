@@ -13,25 +13,17 @@ app.get('/', (req, res) => {
   res.send('FinTrack API is running...');
 });
 
-app.use('/api/auth', (req, res, next) => {
-  // TODO: Implement Auth routes
-  res.status(501).json({ message: 'Auth routes not implemented yet' });
-});
+const authRoutes = require('./routes/authRoutes');
+app.use('/api/auth', authRoutes);
 
-app.use('/api/transactions', (req, res, next) => {
-  // TODO: Implement Transaction routes
-  res.status(501).json({ message: 'Transaction routes not implemented yet' });
-});
+const transactionRoutes = require('./routes/transactionRoutes');
+app.use('/api/transactions', transactionRoutes);
 
-app.use('/api/budgets', (req, res, next) => {
-  // TODO: Implement Budget routes
-  res.status(501).json({ message: 'Budget routes not implemented yet' });
-});
+const budgetRoutes = require('./routes/budgetRoutes');
+app.use('/api/budgets', budgetRoutes);
 
-app.use('/api/dashboard', (req, res, next) => {
-  // TODO: Implement Dashboard routes
-  res.status(501).json({ message: 'Dashboard routes not implemented yet' });
-});
+const dashboardRoutes = require('./routes/dashboardRoutes');
+app.use('/api/dashboard', dashboardRoutes);
 
 // Centralized Error Handling Middleware
 app.use(errorHandler);
