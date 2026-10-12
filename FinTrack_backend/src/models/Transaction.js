@@ -25,6 +25,7 @@ const transactionSchema = new mongoose.Schema(
     description: {
       type: String,
       trim: true,
+      maxlength: [500, 'Description cannot exceed 500 characters'],
     },
     date: {
       type: Date,
@@ -36,5 +37,8 @@ const transactionSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Index for efficient user queries sorted by date
+transactionSchema.index({ userId: 1, date: -1 });
 
 module.exports = mongoose.model('Transaction', transactionSchema);
