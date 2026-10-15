@@ -8,7 +8,6 @@ import {
   Wallet,
   Receipt,
   PieChart as PieIcon,
-  RefreshCw,
   CheckCircle2,
 } from 'lucide-react';
 import transactionService from '../services/transactionService';
@@ -227,10 +226,10 @@ export const ReportsPage = () => {
       {/* =========================================================================
           INTERACTIVE CONTROLS BAR (Hidden during print)
          ========================================================================= */}
-      <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs print:hidden space-y-4">
+      <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs print:hidden space-y-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl">
+            <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl shrink-0">
               <Calendar className="w-5 h-5" aria-hidden="true" />
             </div>
             <div>
@@ -240,12 +239,13 @@ export const ReportsPage = () => {
           </div>
 
           {/* Action Buttons: Export CSV & Print PDF */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2.5 w-full md:w-auto">
             <Button
               variant="secondary"
               icon={FileSpreadsheet}
               onClick={handleExportCSV}
               disabled={loading || transactions.length === 0}
+              className="w-full sm:w-auto justify-center"
             >
               Export CSV
             </Button>
@@ -255,6 +255,7 @@ export const ReportsPage = () => {
               icon={Printer}
               onClick={handlePrint}
               disabled={loading || transactions.length === 0}
+              className="w-full sm:w-auto justify-center"
             >
               Print / Save PDF
             </Button>
@@ -262,7 +263,7 @@ export const ReportsPage = () => {
         </div>
 
         {/* Date Filters & Presets Strip */}
-        <div className="pt-3 border-t border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div className="pt-3 border-t border-slate-100 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
           {/* Quick Presets */}
           <div className="flex flex-wrap items-center gap-1.5 text-xs">
             <span className="text-slate-400 font-medium mr-1">Presets:</span>
@@ -289,9 +290,9 @@ export const ReportsPage = () => {
           </div>
 
           {/* Custom Date Pickers */}
-          <div className="flex items-center gap-2 text-sm">
-            <div className="flex items-center gap-1.5">
-              <label htmlFor="report-start-date" className="text-xs font-medium text-slate-500">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full xl:w-auto">
+            <div className="flex items-center gap-2 bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 focus-within:ring-2 focus-within:ring-emerald-500 focus-within:border-emerald-500 transition-all flex-1 sm:w-48 shadow-xs">
+              <label htmlFor="report-start-date" className="text-xs font-semibold text-slate-500 whitespace-nowrap shrink-0">
                 From:
               </label>
               <input
@@ -302,12 +303,12 @@ export const ReportsPage = () => {
                   setActivePreset('custom');
                   setDateRange((prev) => ({ ...prev, startDate: e.target.value }));
                 }}
-                className="text-xs bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full min-w-0 text-xs bg-transparent text-slate-800 focus:outline-none cursor-pointer"
               />
             </div>
 
-            <div className="flex items-center gap-1.5">
-              <label htmlFor="report-end-date" className="text-xs font-medium text-slate-500">
+            <div className="flex items-center gap-2 bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 focus-within:ring-2 focus-within:ring-emerald-500 focus-within:border-emerald-500 transition-all flex-1 sm:w-48 shadow-xs">
+              <label htmlFor="report-end-date" className="text-xs font-semibold text-slate-500 whitespace-nowrap shrink-0">
                 To:
               </label>
               <input
@@ -318,21 +319,9 @@ export const ReportsPage = () => {
                   setActivePreset('custom');
                   setDateRange((prev) => ({ ...prev, endDate: e.target.value }));
                 }}
-                className="text-xs bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full min-w-0 text-xs bg-transparent text-slate-800 focus:outline-none cursor-pointer"
               />
             </div>
-
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={RefreshCw}
-              onClick={fetchReportData}
-              loading={loading}
-              className="ml-1"
-              title="Refresh report"
-            >
-              Apply
-            </Button>
           </div>
         </div>
       </div>
@@ -366,9 +355,9 @@ export const ReportsPage = () => {
          ========================================================================= */}
       {transactions.length > 0 && (
         <>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {/* Total Income */}
-            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs print:border-slate-300 print:shadow-none">
+            <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs print:border-slate-300 print:shadow-none">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Income</span>
                 <div className="p-2 bg-emerald-50 text-emerald-600 rounded-xl print:hidden">
@@ -384,7 +373,7 @@ export const ReportsPage = () => {
             </div>
 
             {/* Total Expenses */}
-            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs print:border-slate-300 print:shadow-none">
+            <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs print:border-slate-300 print:shadow-none">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Expenses</span>
                 <div className="p-2 bg-rose-50 text-rose-600 rounded-xl print:hidden">
@@ -400,7 +389,7 @@ export const ReportsPage = () => {
             </div>
 
             {/* Net Balance */}
-            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs print:border-slate-300 print:shadow-none">
+            <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs print:border-slate-300 print:shadow-none">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Net Balance</span>
                 <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl print:hidden">
@@ -418,7 +407,7 @@ export const ReportsPage = () => {
             </div>
 
             {/* Savings Rate */}
-            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs print:border-slate-300 print:shadow-none">
+            <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs print:border-slate-300 print:shadow-none">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Savings Rate</span>
                 <div className="p-2 bg-slate-100 text-slate-600 rounded-xl print:hidden">
