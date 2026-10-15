@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   TrendingUp,
   TrendingDown,
@@ -6,15 +6,22 @@ import {
   Calendar,
   RefreshCw,
   Plus,
+  AlertTriangle,
+  AlertOctagon,
+  ArrowUpRight,
+  Sparkles,
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import dashboardService from '../services/dashboardService';
+import budgetService from '../services/budgetService';
 import { MONTHS } from '../utils/constants';
+import { formatCurrency, formatPercentage } from '../utils/formatters';
 import SummaryCard from '../components/dashboard/SummaryCard';
 import ExpensePieChart from '../components/dashboard/ExpensePieChart';
 import IncomeVsExpenseBarChart from '../components/dashboard/IncomeVsExpenseBarChart';
 import RecentTransactionsTable from '../components/dashboard/RecentTransactionsTable';
 import Button from '../components/common/Button';
+import Select from '../components/common/Select';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 
@@ -24,6 +31,8 @@ export const DashboardPage = () => {
   const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
 
   const [dashboardData, setDashboardData] = useState(null);
+  const [prevDashboardData, setPrevDashboardData] = useState(null);
+  const [monthBudgets, setMonthBudgets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -33,11 +42,39 @@ export const DashboardPage = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await dashboardService.getDashboard({
+      // 1. Fetch current month data
+      const currentMonthData = await dashboardService.getDashboard({
         month: Number(selectedMonth),
         year: Number(selectedYear),
       });
-      setDashboardData(data);
+      setDashboardData(currentMonthData);
+
+      // 2. Fetch previous month data for comparison insights
+      const prevMonth = Number(selectedMonth) === 1 ? 12 : Number(selectedMonth) - 1;
+      const prevYear = Number(selectedMonth) === 1 ? Number(selectedYear) - 1 : Number(selectedYear);
+
+      try {
+        const prevData = await dashboardService.getDashboard({
+          month: prevMonth,
+          year: prevYear,
+        });
+        setPrevDashboardData(prevData);
+      } catch (err) {
+        console.warn('Could not fetch previous month comparison:', err);
+        setPrevDashboardData(null);
+      }
+
+      // 3. Fetch current month budgets for spending alerts
+      try {
+        const budgetsData = await budgetService.getBudgets({
+          month: Number(selectedMonth),
+          year: Number(selectedYear),
+        });
+        setMonthBudgets(budgetsData || []);
+      } catch (err) {
+        console.warn('Could not fetch month budgets:', err);
+        setMonthBudgets([]);
+      }
     } catch (err) {
       setError(err.message || 'Failed to load dashboard data.');
     } finally {
@@ -49,7 +86,7 @@ export const DashboardPage = () => {
     fetchDashboard();
   }, [fetchDashboard]);
 
-  // Year options: past 3 years, current, and next year
+  // Year options
   const currentYearNum = new Date().getFullYear();
   const yearOptions = [
     currentYearNum - 2,
@@ -58,11 +95,59 @@ export const DashboardPage = () => {
     currentYearNum + 1,
   ];
 
-  const summary = dashboardData?.summary || {
+  const summary = useMemo(() => dashboardData?.summary || {
     totalIncome: 0,
     totalExpenses: 0,
     balance: 0,
-  };
+  }, [dashboardData]);
+
+  const prevSummary = useMemo(() => prevDashboardData?.summary || {
+    totalIncome: 0,
+    totalExpenses: 0,
+    balance: 0,
+  }, [prevDashboardData]);
+
+  // Month-over-Month Comparison Calculations
+  const comparisonInsights = useMemo(() => {
+    let expenseChangeText = null;
+    let expenseTrendingUp = false;
+    if (prevSummary.totalExpenses > 0) {
+      const diff = summary.totalExpenses - prevSummary.totalExpenses;
+      const pct = Math.abs((diff / prevSummary.totalExpenses) * 100).toFixed(1);
+      expenseTrendingUp = diff > 0;
+      expenseChangeText = `${expenseTrendingUp ? '↑' : '↓'} ${pct}% vs previous month`;
+    }
+
+    let incomeChangeText = null;
+    let incomeTrendingUp = false;
+    if (prevSummary.totalIncome > 0) {
+      const diff = summary.totalIncome - prevSummary.totalIncome;
+      const pct = Math.abs((diff / prevSummary.totalIncome) * 100).toFixed(1);
+      incomeTrendingUp = diff > 0;
+      incomeChangeText = `${incomeTrendingUp ? '↑' : '↓'} ${pct}% vs previous month`;
+    }
+
+    // Top spending category
+    const topCategory = dashboardData?.expenseBreakdown?.[0] || null;
+
+    // Budget alerts
+    const exceededBudgets = monthBudgets.filter((b) => b.isExceeded || b.percentageUsed > 100);
+    const nearLimitBudgets = monthBudgets.filter(
+      (b) => b.percentageUsed >= 80 && !b.isExceeded && b.percentageUsed <= 100
+    );
+
+    return {
+      expenseChangeText,
+      expenseTrendingUp,
+      incomeChangeText,
+      incomeTrendingUp,
+      topCategory,
+      exceededBudgets,
+      nearLimitBudgets,
+    };
+  }, [summary, prevSummary, dashboardData, monthBudgets]);
+
+  const selectedMonthName = MONTHS.find((m) => m.value === selectedMonth)?.label;
 
   return (
     <div className="space-y-6">
@@ -78,34 +163,28 @@ export const DashboardPage = () => {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-3">
           {/* Month Selector */}
-          <select
+          <Select
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(Number(e.target.value))}
-            className="text-sm font-medium bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            options={MONTHS}
+            size="md"
+            fullWidth={false}
+            className="w-36"
             aria-label="Select month"
-          >
-            {MONTHS.map((m) => (
-              <option key={m.value} value={m.value}>
-                {m.label}
-              </option>
-            ))}
-          </select>
+          />
 
           {/* Year Selector */}
-          <select
+          <Select
             value={selectedYear}
             onChange={(e) => setSelectedYear(Number(e.target.value))}
-            className="text-sm font-medium bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            options={yearOptions}
+            size="md"
+            fullWidth={false}
+            className="w-28"
             aria-label="Select year"
-          >
-            {yearOptions.map((y) => (
-              <option key={y} value={y}>
-                {y}
-              </option>
-            ))}
-          </select>
+          />
 
           <Button
             variant="secondary"
@@ -138,6 +217,56 @@ export const DashboardPage = () => {
         />
       )}
 
+      {/* Budget Approaching or Exceeded Alerts */}
+      {comparisonInsights.exceededBudgets.length > 0 && (
+        <div className="rounded-2xl border border-rose-200 bg-rose-50/90 p-4 text-rose-900 shadow-xs flex items-start justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <AlertOctagon className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" aria-hidden="true" />
+            <div>
+              <h4 className="text-sm font-bold text-rose-900">
+                Budget Exceeded in {comparisonInsights.exceededBudgets.length} Categor{comparisonInsights.exceededBudgets.length === 1 ? 'y' : 'ies'}!
+              </h4>
+              <p className="mt-0.5 text-xs text-rose-700">
+                You have exceeded spending targets in:{' '}
+                <span className="font-semibold">
+                  {comparisonInsights.exceededBudgets.map((b) => `${b.category} (${formatCurrency(b.spentAmount)} / ${formatCurrency(b.budgetAmount)})`).join(', ')}
+                </span>
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/budgets"
+            className="inline-flex items-center gap-1 text-xs font-bold text-rose-700 hover:text-rose-900 hover:underline shrink-0"
+          >
+            <span>Review Budgets</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+      )}
+
+      {comparisonInsights.exceededBudgets.length === 0 && comparisonInsights.nearLimitBudgets.length > 0 && (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50/90 p-4 text-amber-900 shadow-xs flex items-start justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
+            <div>
+              <h4 className="text-sm font-bold text-amber-900">
+                Spending Approaching Limit
+              </h4>
+              <p className="mt-0.5 text-xs text-amber-800">
+                {comparisonInsights.nearLimitBudgets.map((b) => `${b.category} is at ${formatPercentage(b.percentageUsed)} of limit`).join(', ')}
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/budgets"
+            className="inline-flex items-center gap-1 text-xs font-bold text-amber-800 hover:text-amber-950 hover:underline shrink-0"
+          >
+            <span>Adjust Budgets</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+      )}
+
       {/* Loading Spinner for initial load */}
       {loading && !dashboardData && (
         <LoadingSpinner message="Calculating your financial overview..." />
@@ -150,14 +279,30 @@ export const DashboardPage = () => {
           amount={summary.totalIncome}
           icon={TrendingUp}
           variant="income"
-          subtitle={`Earnings recorded in ${MONTHS.find((m) => m.value === selectedMonth)?.label}`}
+          subtitle={
+            comparisonInsights.incomeChangeText ? (
+              <span className={`inline-flex items-center gap-1 font-semibold ${comparisonInsights.incomeTrendingUp ? 'text-emerald-600' : 'text-slate-500'}`}>
+                {comparisonInsights.incomeChangeText}
+              </span>
+            ) : (
+              `Recorded in ${selectedMonthName}`
+            )
+          }
         />
         <SummaryCard
           title="Total Expenses"
           amount={summary.totalExpenses}
           icon={TrendingDown}
           variant="expense"
-          subtitle={`Spendings recorded in ${MONTHS.find((m) => m.value === selectedMonth)?.label}`}
+          subtitle={
+            comparisonInsights.expenseChangeText ? (
+              <span className={`inline-flex items-center gap-1 font-semibold ${comparisonInsights.expenseTrendingUp ? 'text-rose-600' : 'text-emerald-600'}`}>
+                {comparisonInsights.expenseChangeText}
+              </span>
+            ) : (
+              `Recorded in ${selectedMonthName}`
+            )
+          }
         />
         <SummaryCard
           title="Current Balance"
@@ -167,6 +312,32 @@ export const DashboardPage = () => {
           subtitle="Net savings (Income - Expenses)"
         />
       </div>
+
+      {/* Financial Highlight Insight Banner */}
+      {comparisonInsights.topCategory && (
+        <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-emerald-500/20 text-emerald-400 rounded-xl">
+              <Sparkles className="w-5 h-5" aria-hidden="true" />
+            </div>
+            <div>
+              <p className="text-xs uppercase font-semibold tracking-wider text-emerald-400">
+                Highest Spending Category ({selectedMonthName})
+              </p>
+              <h4 className="text-base font-bold mt-0.5">
+                {comparisonInsights.topCategory.category} — {formatCurrency(comparisonInsights.topCategory.amount)} ({comparisonInsights.topCategory.percentage.toFixed(1)}% of total expenses)
+              </h4>
+            </div>
+          </div>
+          <Link
+            to={`/reports`}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold text-white transition-colors self-start sm:self-auto"
+          >
+            <span>View Full Statement</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+      )}
 
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   Receipt,
   PiggyBank,
+  FileSpreadsheet,
   LogOut,
   Wallet,
   X,
@@ -30,6 +31,11 @@ export const Sidebar = ({ isOpen, onClose }) => {
       name: 'Budgets',
       path: '/budgets',
       icon: PiggyBank,
+    },
+    {
+      name: 'Reports & Export',
+      path: '/reports',
+      icon: FileSpreadsheet,
     },
   ];
 

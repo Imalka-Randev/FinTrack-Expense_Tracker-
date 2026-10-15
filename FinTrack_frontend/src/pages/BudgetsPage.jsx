@@ -7,9 +7,11 @@ import BudgetCard from '../components/budgets/BudgetCard';
 import BudgetModal from '../components/budgets/BudgetModal';
 import ConfirmModal from '../components/common/ConfirmModal';
 import Button from '../components/common/Button';
+import Select from '../components/common/Select';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import EmptyState from '../components/common/EmptyState';
 import ErrorMessage from '../components/common/ErrorMessage';
+import useToast from '../hooks/useToast';
 
 export const BudgetsPage = () => {
   const currentDate = new Date();
@@ -49,6 +51,8 @@ export const BudgetsPage = () => {
     fetchBudgets();
   }, [fetchBudgets]);
 
+  const { showSuccess, showError } = useToast();
+
   // Handle Save (Create / Update)
   const handleSaveBudget = async (data) => {
     setModalLoading(true);
@@ -58,12 +62,16 @@ export const BudgetsPage = () => {
         await budgetService.updateBudget(editingBudget._id, {
           amount: data.amount,
         });
+        showSuccess('Budget limit updated successfully');
       } else {
         await budgetService.createBudget(data);
+        showSuccess('Budget limit established successfully');
       }
       setIsModalOpen(false);
       setEditingBudget(null);
       await fetchBudgets();
+    } catch (err) {
+      showError(err.message || 'Failed to save budget plan');
     } finally {
       setModalLoading(false);
     }
@@ -75,10 +83,11 @@ export const BudgetsPage = () => {
     setDeleteLoading(true);
     try {
       await budgetService.deleteBudget(deletingBudget._id);
+      showSuccess('Budget plan deleted successfully');
       setDeletingBudget(null);
       await fetchBudgets();
     } catch (err) {
-      alert(`Failed to delete budget: ${err.message}`);
+      showError(err.message || 'Failed to delete budget');
     } finally {
       setDeleteLoading(false);
     }
@@ -120,35 +129,30 @@ export const BudgetsPage = () => {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
-          <select
+        <div className="flex flex-wrap items-center gap-3">
+          <Select
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(Number(e.target.value))}
-            className="text-sm font-medium bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            options={MONTHS}
+            size="md"
+            fullWidth={false}
+            className="w-36"
             aria-label="Select budget month"
-          >
-            {MONTHS.map((m) => (
-              <option key={m.value} value={m.value}>
-                {m.label}
-              </option>
-            ))}
-          </select>
+          />
 
-          <select
+          <Select
             value={selectedYear}
             onChange={(e) => setSelectedYear(Number(e.target.value))}
-            className="text-sm font-medium bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            options={yearOptions}
+            size="md"
+            fullWidth={false}
+            className="w-28"
             aria-label="Select budget year"
-          >
-            {yearOptions.map((y) => (
-              <option key={y} value={y}>
-                {y}
-              </option>
-            ))}
-          </select>
+          />
 
           <Button
             variant="secondary"
+            size="md"
             icon={RefreshCw}
             onClick={fetchBudgets}
             loading={loading}
@@ -159,6 +163,7 @@ export const BudgetsPage = () => {
 
           <Button
             variant="primary"
+            size="md"
             icon={Plus}
             onClick={() => {
               setEditingBudget(null);

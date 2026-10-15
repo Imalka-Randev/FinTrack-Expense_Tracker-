@@ -7,7 +7,7 @@ export const SummaryCard = ({
   icon: Icon,
   variant = 'neutral',
   subtitle,
-}) => {
+}) => { 
   const variantStyles = {
     income: {
       border: 'border-emerald-100',
@@ -22,7 +22,7 @@ export const SummaryCard = ({
     balance: {
       border: 'border-slate-200',
       iconBg: 'bg-indigo-50 text-indigo-600',
-      amountColor: 'text-slate-900',
+      amountColor: 'text-indigo-600',
     },
     neutral: {
       border: 'border-slate-200',

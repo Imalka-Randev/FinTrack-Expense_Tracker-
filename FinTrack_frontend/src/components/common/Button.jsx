@@ -31,9 +31,9 @@ export const Button = ({
   };
 
   const sizeStyles = {
-    sm: 'text-xs px-2.5 py-1.5 gap-1.5',
-    md: 'text-sm px-4 py-2 gap-2',
-    lg: 'text-base px-5 py-2.5 gap-2.5',
+    sm: 'text-xs px-3 h-9 gap-1.5',
+    md: 'text-sm px-4 h-10 gap-2',
+    lg: 'text-base px-5 h-12 gap-2.5',
   };
 
   const isActuallyDisabled = disabled || loading;

@@ -9,6 +9,7 @@ import ConfirmModal from '../components/common/ConfirmModal';
 import Button from '../components/common/Button';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
+import useToast from '../hooks/useToast';
 
 export const TransactionsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -62,18 +63,24 @@ export const TransactionsPage = () => {
     }
   }, [searchParams, setSearchParams]);
 
+  const { showSuccess, showError } = useToast();
+
   // Handle Add / Edit Submission
   const handleSaveTransaction = async (data) => {
     setModalLoading(true);
     try {
       if (editingTransaction?._id) {
         await transactionService.updateTransaction(editingTransaction._id, data);
+        showSuccess('Transaction updated successfully');
       } else {
         await transactionService.createTransaction(data);
+        showSuccess('Transaction recorded successfully');
       }
       setIsModalOpen(false);
       setEditingTransaction(null);
       await fetchTransactions();
+    } catch (err) {
+      showError(err.message || 'Failed to save transaction');
     } finally {
       setModalLoading(false);
     }
@@ -85,10 +92,11 @@ export const TransactionsPage = () => {
     setDeleteLoading(true);
     try {
       await transactionService.deleteTransaction(deletingTransaction._id);
+      showSuccess('Transaction deleted successfully');
       setDeletingTransaction(null);
       await fetchTransactions();
     } catch (err) {
-      alert(`Failed to delete transaction: ${err.message}`);
+      showError(err.message || 'Failed to delete transaction');
     } finally {
       setDeleteLoading(false);
     }

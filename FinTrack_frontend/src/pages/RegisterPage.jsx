@@ -37,8 +37,8 @@ export const RegisterPage = () => {
 
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
     }
 
     if (formData.password !== formData.confirmPassword) {
@@ -140,7 +140,7 @@ export const RegisterPage = () => {
               type="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="At least 6 characters"
+              placeholder="At least 8 characters"
               icon={Lock}
               error={errors.password}
               required
