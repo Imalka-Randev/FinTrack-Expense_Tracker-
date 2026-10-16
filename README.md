@@ -17,7 +17,6 @@ FinTrack allows users to register, log in, and manage their personal finances �
 - 📥 **Export to CSV** — Download transactions as a formatted spreadsheet (RFC 4180 compliant, Excel-compatible)
 - 🖨️ **Print & PDF Statements** — Formatted, print-ready financial statement layout optimized with CSS print styling
 - 🔔 **Toast Feedback** — Real-time toast notifications for clear feedback on user actions
-- 👁️ **Password Visibility** — Convenient show/hide password toggle on authentication forms
 - 📱 **Responsive Design** — Mobile-first UI optimized across 360px mobile screens up to desktop displays
 
 ---
