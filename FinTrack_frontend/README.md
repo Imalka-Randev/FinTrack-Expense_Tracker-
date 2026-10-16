@@ -1,16 +1,63 @@
-# React + Vite
+# FinTrack Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React + Vite frontend for the FinTrack personal finance management application.
 
-Currently, two official plugins are available:
+Built with **React v19**, **Vite v8**, **Tailwind CSS v4**, and **React Router v7**.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Getting Started
 
-## React Compiler
+### Install dependencies
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm install
+```
 
-## Expanding the Oxlint configuration
+### Configure environment
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+Create a `.env` file in this directory:
+
+```env
+VITE_API_BASE_URL=http://localhost:5001/api
+```
+
+### Start development server
+
+```bash
+npm run dev
+```
+
+The app will run at **http://localhost:5173**
+
+## Build for production
+
+```bash
+npm run build
+npm run preview
+```
+
+## Project Structure
+
+```text
+src/
+├── components/
+│   ├── common/         # Reusable UI (Button, Input, Select, Modal, Badge...)
+│   ├── dashboard/      # Charts and summary cards
+│   ├── transactions/   # Transaction table, filters, form modal
+│   └── budgets/        # Budget card and form modal
+├── context/            # AuthContext, ToastContext
+├── hooks/              # useAuth, useToast
+├── layouts/            # AppLayout, Sidebar, TopNavbar
+├── pages/              # LoginPage, RegisterPage, DashboardPage, TransactionsPage, BudgetsPage, ReportsPage
+├── services/           # Axios API wrappers
+└── utils/              # Formatters, constants, exportUtils
+```
+
+## Technologies
+
+- [React 19](https://react.dev/)
+- [Vite 8](https://vite.dev/)
+- [Tailwind CSS 4](https://tailwindcss.com/)
+- [React Router 7](https://reactrouter.com/)
+- [Recharts](https://recharts.org/) — data visualization
+- [Axios](https://axios-http.com/) — API requests
+- [Lucide React](https://lucide.dev/) — icons
