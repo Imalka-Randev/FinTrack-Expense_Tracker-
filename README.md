@@ -1,37 +1,24 @@
 # FinTrack — Expense & Budget Tracker
 
-> A full-stack personal finance management application built as an individual assignment for **Software Engineering Team - 405**.
+> A modern full-stack personal finance and expense management web application designed to help individuals track spending, manage monthly budgets, and gain financial clarity.
 
 FinTrack allows users to register, log in, and manage their personal finances — tracking income, expenses, monthly budgets, and generating financial reports — all within a clean, responsive web interface.
 
 ---
 
-## 🔗 Links
+## ✨ Key Features
 
-| Resource | Link |
-|---|---|
-| **GitHub Repository** | [https://github.com/Imalka-Randev/FinTrack-Expense_Tracker-](https://github.com/Imalka-Randev/FinTrack-Expense_Tracker-) |
-| **Demo Video** | *(Google Drive link — see submission document)* |
-
----
-
-## ✨ Features
-
-### Core Features
-- 🔐 **User Authentication** — Register and login with JWT-protected routes and bcrypt password hashing
-- 📊 **Financial Dashboard** — Monthly income, expenses, net balance, budget alerts, and month-over-month comparison
-- 💸 **Transaction Management** — Add, edit, and delete income and expense records with categories
-- 🔍 **Search & Filter** — Filter transactions by keyword, type (income/expense), category, and date range
-- 🎯 **Budget Planner** — Set per-category monthly spending limits with real-time progress tracking
-- 📈 **Visual Charts** — Expense pie chart (category breakdown) and income vs. expense bar chart (daily timeline)
-- ✅ **Form Validation** — Client-side and server-side validation with inline error messages
-- 📱 **Responsive UI** — Fully responsive layout from 360px mobile screens up to wide desktop displays
-
-### Optional Features (Implemented)
+- 🔐 **User Authentication** — Secure registration and login with JWT-protected routes and bcrypt password hashing
+- 📊 **Financial Dashboard** — Real-time monthly income, expenses, net balance, budget alerts, and month-over-month comparison
+- 💸 **Transaction Management** — Full CRUD support for income and expense records with category classification
+- 🔍 **Search & Multi-Filter** — Instant keyword search and multi-filtering by type (income/expense), category, and date range
+- 🎯 **Budget Planner** — Set monthly spending limits per category with live progress indicators and overspending alerts
+- 📈 **Visual Analytics** — Interactive expense breakdown (Pie chart) and daily timeline comparison (Bar chart) powered by Recharts
 - 📥 **Export to CSV** — Download transactions as a formatted spreadsheet (RFC 4180 compliant, Excel-compatible)
-- 🖨️ **Print / Save PDF** — Print-ready financial statement layout with page-break optimized CSS
-- 🔔 **Toast Notifications** — Real-time success/error feedback for all CRUD operations
-- 👁️ **Password Visibility Toggle** — Show/hide password on login and registration forms
+- 🖨️ **Print & PDF Statements** — Formatted, print-ready financial statement layout optimized with CSS print styling
+- 🔔 **Toast Feedback** — Real-time toast notifications for clear feedback on user actions
+- 👁️ **Password Visibility** — Convenient show/hide password toggle on authentication forms
+- 📱 **Responsive Design** — Mobile-first UI optimized across 360px mobile screens up to desktop displays
 
 ---
 
@@ -140,7 +127,7 @@ JWT_SECRET=your_strong_secret_key_here
 JWT_EXPIRES_IN=30d
 ```
 
-> **MongoDB Atlas:** Replace `MONGO_URI` with your Atlas connection string (e.g., `mongodb+srv://<user>:<password>@cluster.mongodb.net/fintrack`)
+> **MongoDB Atlas:** Replace `MONGO_URI` with your Atlas connection string (e.g., `mongodb+srv://<user>:<password>@cluster.mongodb.net/<dbname>`)
 
 Start the backend development server:
 
@@ -222,24 +209,6 @@ The application will open on **http://localhost:5173**
 
 ---
 
-## 📸 Key Screenshots
-
-> Screenshots below highlight the main features of FinTrack.
-
-### Dashboard
-The dashboard displays monthly income, expenses, net balance, month-over-month comparison trends, budget alerts, expense pie chart, and income vs. expense bar chart.
-
-### Transactions
-Full transaction history with inline search (keyword), type filter (income/expense), category filter, and date-range picker. Add, edit, and delete records via a modal form with validation.
-
-### Budget Planner
-Set per-category monthly budgets. Each budget card shows a progress bar with percentage used, spent amount, remaining amount, and visual warning when a budget is exceeded.
-
-### Reports & Export
-Select a date range or use quick presets (This Month, Last Month, Last 30 Days, Year to Date, All Time). View total income, total expenses, net balance, savings rate, and category breakdown. Export data to CSV or print/save as PDF.
-
----
-
 ## 🧪 Running Tests
 
 ```bash
@@ -260,4 +229,10 @@ node --test budget.test.js
 ## 👤 Author
 
 **Imalka Randev K.T.**
-Individual Assignment — Software Engineering Team 405
+- GitHub: [@Imalka-Randev](https://github.com/Imalka-Randev)
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).

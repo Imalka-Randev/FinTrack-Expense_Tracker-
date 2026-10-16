@@ -2,12 +2,11 @@
 
 FinTrack – Expense & Budget Tracker backend application providing a RESTful API for managing personal finances.
 
-## Current Development Status
-- **IMPLEMENTED:** Complete authentication (`/api/auth/register`, `/api/auth/login`, `/api/auth/me`) with JWT and bcrypt.
-- **IMPLEMENTED:** Complete transaction management (`POST`, `GET`, `PUT`, `DELETE` at `/api/transactions`) with strict user data isolation, server-side validation, search by description, category matching, and date-range filtering.
-- **IMPLEMENTED:** Complete dashboard API & financial calculations (`GET /api/dashboard`) with total income, total expenses, balance calculations, category expense breakdown, daily time-series, and latest transactions.
-- **IMPLEMENTED:** Complete budget management (`POST`, `GET`, `PUT`, `DELETE` at `/api/budgets`) with dynamic spending calculations (`spentAmount`, `remainingAmount`, `percentageUsed`, `isExceeded`), monthly budget limit tracking, and compound unique validation.
-- **IMPLEMENTED:** Full React + Vite frontend with dashboard, transactions, budgets, and reports pages.
+## Features & Capabilities
+- **Authentication:** Secure user registration, login, and session validation using JWT and bcrypt password hashing.
+- **Transaction Management:** RESTful CRUD API (`/api/transactions`) with strict user data isolation, schema validation, keyword search, category matching, and date-range filters.
+- **Dashboard & Analytics:** Real-time financial calculations (`/api/dashboard`) including total income, total expenses, net balance, category breakdown, and daily trends.
+- **Budget Tracking:** Automated monthly budget calculations (`/api/budgets`) tracking spending progress, remaining allowance, percentage utilized, and overspending warnings.
 
 ## Technology Stack
 - Node.js
